@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { useCartStore } from "@/store/useCartStore"
+import Link from "next/link"
 import Image from "next/image"
 
 interface ProductProps {
@@ -30,24 +31,24 @@ export function ProductCard({ product }: ProductProps) {
   }
 
   return (
-    <Card className="group overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-      <CardContent className="p-0 relative">
-        <div className="relative aspect-square bg-secondary/30 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10 mix-blend-multiply" />
-          {/* We use a colored div as placeholder for image to look WOW without actual images */}
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/30 group-hover:scale-105 transition-transform duration-500">
-            <span className="text-4xl opacity-20 font-black tracking-tighter mix-blend-overlay uppercase">{product.category}</span>
+    <Card className="group overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col">
+      <Link href={`/product/${product.id}`} className="flex-1">
+        <CardContent className="p-0 relative">
+          <div className="relative aspect-square bg-secondary/30 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10 mix-blend-multiply" />
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/30 group-hover:scale-105 transition-transform duration-500">
+              <span className="text-4xl opacity-20 font-black tracking-tighter mix-blend-overlay uppercase">{product.category}</span>
+            </div>
           </div>
-        </div>
-        <div className="p-5">
-          <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-1">{product.category}</p>
-          <h3 className="font-bold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-primary transition-colors">
-            {product.name}
-          </h3>
-        </div>
-      </CardContent>
+          <div className="p-5">
+            <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-1">{product.category}</p>
+            <h3 className="font-bold text-lg leading-tight line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+              {product.name}
+            </h3>
+          </div>
+        </CardContent>
+      </Link>
       
-      {/* Gestalt Principle: Proximity (Price and Button are grouped together) */}
       <CardFooter className="px-5 pb-5 pt-0 flex items-center justify-between gap-4 mt-auto">
         <div className="flex flex-col">
           <span className="text-xs text-muted-foreground font-medium">Price</span>
