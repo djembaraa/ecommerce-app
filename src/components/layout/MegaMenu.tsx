@@ -78,7 +78,7 @@ export function MegaMenu() {
         <NavigationMenuItem>
           <NavigationMenuLink 
             render={<Link href="/sale" />} 
-            className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium text-red-500 hover:text-red-600")}
+            className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium")}
           >
             Sale
           </NavigationMenuLink>
