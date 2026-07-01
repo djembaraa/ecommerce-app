@@ -1,44 +1,98 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+
+// Middleware helper untuk memvalidasi akses admin di setiap route API
+async function checkAdminAccess() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) return { authorized: false, supabase: null }
+  
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+    
+  if (!profile || profile.role !== 'admin') return { authorized: false, supabase: null }
+  
+  return { authorized: true, supabase }
+}
 
 export async function POST(request: Request) {
   try {
-    // 🚨 VULNERABILITY WARNING: MISSING FUNCTION LEVEL ACCESS CONTROL 🚨
-    // AS REQUESTED BY THE USER FOR DEMO PURPOSES:
-    // This backend route does NOT verify if the user is actually an admin.
-    // It relies entirely on Next.js Edge Middleware for protection, which can be bypassed 
-    // if an attacker directly hits this endpoint without going through the frontend UI,
-    // or if the middleware matcher is misconfigured.
-    // In production, you MUST verify the user's role (e.g. JWT check) right here!
+    const { authorized, supabase } = await checkAdminAccess()
+    if (!authorized || !supabase) {
+      return NextResponse.json({ error: 'Unauthorized Access' }, { status: 403 })
+    }
 
     const payload = await request.json()
-    const { name, category, price, stock } = payload
+    const { data, error } = await supabase
+      .from('products')
+      .insert(payload)
+      .select()
+      .single()
 
-    if (!name || !category || !price) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+    if (error) throw error
+
+    return NextResponse.json({ success: true, product: data }, { status: 201 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Failed to process request' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { authorized, supabase } = await checkAdminAccess()
+    if (!authorized || !supabase) {
+      return NextResponse.json({ error: 'Unauthorized Access' }, { status: 403 })
     }
 
-    // Simulasi menyimpan produk baru ke database
-    const newProduct = {
-      id: Math.random().toString(36).substr(2, 9),
-      name,
-      category,
-      price: Number(price),
-      stock: Number(stock) || 0,
+    const payload = await request.json()
+    const { id, ...updateData } = payload
+
+    if (!id) {
+      return NextResponse.json({ error: 'Product ID is required for update' }, { status: 400 })
     }
 
-    // Simulasi delay database
-    await new Promise(resolve => setTimeout(resolve, 300))
+    const { data, error } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
 
-    return NextResponse.json({
-      success: true,
-      message: 'Product added successfully (INSECURELY)',
-      product: newProduct
-    }, { status: 201 })
+    if (error) throw error
 
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: true, product: data }, { status: 200 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Failed to process request' }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { authorized, supabase } = await checkAdminAccess()
+    if (!authorized || !supabase) {
+      return NextResponse.json({ error: 'Unauthorized Access' }, { status: 403 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Product ID is required for deletion' }, { status: 400 })
+    }
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+
+    return NextResponse.json({ success: true, message: 'Product deleted' }, { status: 200 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Failed to process request' }, { status: 500 })
   }
 }
