@@ -56,9 +56,11 @@ export function Header() {
             <Search className="h-5 w-5" />
           </Button>
           
-          <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full hover:bg-secondary">
-            <User className="h-5 w-5" />
-          </Button>
+          <Link href="/profile">
+            <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full hover:bg-secondary">
+              <User className="h-5 w-5" />
+            </Button>
+          </Link>
 
           <Button 
             variant="ghost" 
