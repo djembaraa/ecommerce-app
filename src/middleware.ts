@@ -1,20 +1,9 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-export function middleware(request: NextRequest) {
-  // Simulasi mengecek cookie "user_role"
-  // Dalam aplikasi nyata, ini akan mengecek JWT token atau session dari Supabase
-  const role = request.cookies.get('user_role')?.value
-
-  // Lindungi route yang diawali dengan /admin
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (role !== 'admin') {
-      // Jika bukan admin, redirect ke homepage
-      return NextResponse.redirect(new URL('/', request.url))
-    }
-  }
-
-  return NextResponse.next()
+export async function middleware(request: NextRequest) {
+  // Pass the request to the Supabase SSR middleware
+  return await updateSession(request)
 }
 
 export const config = {
