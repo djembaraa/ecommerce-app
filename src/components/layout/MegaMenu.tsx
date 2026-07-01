@@ -68,18 +68,18 @@ export function MegaMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/new-arrivals" legacyBehavior passHref>
-            <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium")}>
+          <NavigationMenuLink asChild>
+            <Link href="/new-arrivals" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium")}>
               New Arrivals
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/sale" legacyBehavior passHref>
-            <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium text-red-500 hover:text-red-600")}>
+          <NavigationMenuLink asChild>
+            <Link href="/sale" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-sm font-medium text-red-500 hover:text-red-600")}>
               Sale
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
