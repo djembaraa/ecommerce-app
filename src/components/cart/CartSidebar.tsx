@@ -4,6 +4,7 @@ import { useCartStore } from "@/store/useCartStore"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Trash2, Plus, Minus } from "lucide-react"
+import Link from "next/link"
 import Image from "next/image"
 
 export function CartSidebar() {
@@ -81,9 +82,11 @@ export function CartSidebar() {
               <span>Total</span>
               <span className="text-primary">${getTotalPrice().toFixed(2)}</span>
             </div>
-            <Button className="w-full text-lg h-12 shadow-lg hover:shadow-xl transition-all">
-              Proceed to Checkout
-            </Button>
+            <Link href="/checkout" onClick={() => setIsOpen(false)}>
+              <Button className="w-full text-lg h-12 shadow-lg hover:shadow-xl transition-all">
+                Proceed to Checkout
+              </Button>
+            </Link>
           </div>
         )}
       </SheetContent>
