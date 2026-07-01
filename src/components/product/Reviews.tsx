@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import DOMPurify from 'isomorphic-dompurify'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Star } from 'lucide-react'
@@ -131,15 +130,12 @@ export function Reviews({ productId }: { productId: string }) {
                   </div>
 
                   {/* 
-                    XSS Protection applied here. 
-                    We save raw input, but sanitize it before dangerouslySetInnerHTML.
+                    XSS Protection applied here by default React behavior. 
+                    Raw HTML is rendered as text, preventing script execution automatically.
                   */}
-                  <div 
-                    className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground"
-                    dangerouslySetInnerHTML={{ 
-                      __html: DOMPurify.sanitize(review.content) 
-                    }} 
-                  />
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground whitespace-pre-wrap">
+                    {review.content}
+                  </div>
                 </CardContent>
               </Card>
             ))

@@ -1,65 +1,19 @@
 import { ProductCard } from "@/components/product/ProductCard"
+import { supabase } from '@/lib/supabase'
 
-const MOCK_PRODUCTS = [
-  {
-    id: "1",
-    name: "Ultraboost Light Shoes",
-    category: "Adidas",
-    price: 190.00,
-    image_url: ""
-  },
-  {
-    id: "2",
-    name: "Air Max 270",
-    category: "Nike",
-    price: 160.00,
-    image_url: ""
-  },
-  {
-    id: "3",
-    name: "RS-X Efekt PRM",
-    category: "Puma",
-    price: 120.00,
-    image_url: ""
-  },
-  {
-    id: "4",
-    name: "Classic Leather Shoes",
-    category: "Reebok",
-    price: 85.00,
-    image_url: ""
-  },
-  {
-    id: "5",
-    name: "574 Core",
-    category: "New Balance",
-    price: 89.99,
-    image_url: ""
-  },
-  {
-    id: "6",
-    name: "Curry Flow 10",
-    category: "Under Armour",
-    price: 160.00,
-    image_url: ""
-  },
-  {
-    id: "7",
-    name: "Stan Smith Shoes",
-    category: "Adidas",
-    price: 100.00,
-    image_url: ""
-  },
-  {
-    id: "8",
-    name: "Air Force 1 '07",
-    category: "Nike",
-    price: 110.00,
-    image_url: ""
-  }
-]
+export const revalidate = 60 // Revalidate every 60 seconds
 
-export default function Home() {
+export default async function Home() {
+  // Fetch real data from Supabase
+  const { data: products, error } = await supabase
+    .from('products')
+    .select('*, categories(name)')
+    .limit(8)
+  
+  // If Supabase is not configured or error occurs, fallback to empty array
+  // so the user knows they need to configure it
+  const displayProducts = products || []
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12 space-y-4">
@@ -69,11 +23,31 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8">
-        {MOCK_PRODUCTS.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {displayProducts.length === 0 ? (
+        <div className="text-center py-20 bg-muted/20 rounded-2xl border border-dashed">
+          <p className="text-lg text-muted-foreground">
+            Welcome! It looks like you haven't added products to your Supabase database yet.
+          </p>
+          <p className="text-sm mt-2 text-muted-foreground/60">
+            (Or the .env.local configuration is missing)
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8">
+          {displayProducts.map((product) => (
+            <ProductCard 
+              key={product.id} 
+              product={{
+                id: product.slug || product.id,
+                name: product.name,
+                category: product.categories?.name || "Uncategorized",
+                price: product.price,
+                image_url: product.image_urls?.[0] || ""
+              }} 
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
